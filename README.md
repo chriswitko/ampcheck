@@ -1,0 +1,3 @@
+# ampcheck
+
+unofficial AMP checker
