@@ -18,7 +18,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-    "net/url"
+	"net/url"
 )
 
 // EndPoint is unofficial API Endpoint to call Structured Data Testing Tool.
@@ -32,9 +32,9 @@ var Client = http.DefaultClient
 // Response is response data from API.
 type Response struct {
 	TripleGroups []struct {
-        ErrorsByOwner struct {
-            AMP int `json:"AMP"`
-        } `json:"errorsByOwner"`
+		ErrorsByOwner struct {
+			AMP int `json:"AMP"`
+		} `json:"errorsByOwner"`
 		WarningsByOwner struct {
 			AMP int `json:"AMP"`
 		} `json:"warningsByOwner"`
@@ -53,25 +53,35 @@ type ErrorInfo struct {
 	} `json:"ownerToSeverity"`
 }
 
+// NumErrors returns total number of errors and warnings for AMP respectively.
+func (r *Response) NumErrors() (int, int) {
+	errors, warnings := 0, 0
+	for _, t := range r.TripleGroups {
+		errors += t.ErrorsByOwner.AMP
+		warnings += t.WarningsByOwner.AMP
+	}
+	return errors, warnings
+}
+
 // ValidateURL post urlStr to API and get result.
 func ValidateURL(urlStr string) (*Response, error) {
 	req, err := http.NewRequest("POST", EndPoint, nil)
-   	if err != nil {
+	if err != nil {
 		return nil, err
 	}
-    v := url.Values{}
-    v.Add("url", urlStr)
-    req.Form = v
-    return callAPI(req)
+	v := url.Values{}
+	v.Add("url", urlStr)
+	req.Form = v
+	return callAPI(req)
 }
 
 // Validate post AMP HTML data in r and get result.
 func Validate(r io.Reader) (*Response, error) {
 	req, err := http.NewRequest("POST", EndPoint, r)
-    if err != nil {
-        return nil, err
-    }
-    return callAPI(req)
+	if err != nil {
+		return nil, err
+	}
+	return callAPI(req)
 }
 
 func callAPI(req *http.Request) (*Response, error) {
@@ -79,19 +89,19 @@ func callAPI(req *http.Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-    
-    // Response from the API starts from unnecessary byte array ")]}'",
-    // so throw that part away.
-    ignore := make([]byte, 4)
-    _, err = resp.Body.Read(ignore)
-    if err != nil {
-        return nil, err
-    }
-    
+
+	// Response from the API starts from unnecessary byte array ")]}'",
+	// so throw that part away.
+	ignore := make([]byte, 4)
+	_, err = resp.Body.Read(ignore)
+	if err != nil {
+		return nil, err
+	}
+
 	var apiResp Response
 	err = json.NewDecoder(resp.Body).Decode(&apiResp)
 	if err != nil {
 		return nil, err
 	}
-	return &apiResp, nil    
+	return &apiResp, nil
 }

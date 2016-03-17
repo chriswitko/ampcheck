@@ -15,38 +15,38 @@
 package structureddata
 
 import (
-    "net/http"
-    "testing"
+	"net/http"
+	"testing"
 )
 
 var testURLs = []string{
-    "https://ymotongpoo.github.io/demos/amp/amp.html",
+	"https://ymotongpoo.github.io/demos/amp/amp.html",
 }
 
 func TestValidate(t *testing.T) {
-    for _, u := range testURLs {
-        src, err := http.Get(u)
-        if err != nil {
-            t.Errorf("%v", err)
-        }
-        resp, err := Validate(src.Body)
-        if err != nil {
-            t.Errorf("%v", err)
-        }
-        if resp == nil {
-            t.Errorf("%v", err)
-        }
-    }
+	for _, u := range testURLs {
+		src, err := http.Get(u)
+		if err != nil {
+			t.Errorf("%v", err)
+		}
+		resp, err := Validate(src.Body)
+		if err != nil {
+			t.Errorf("%v", err)
+		}
+		if resp == nil {
+			t.Errorf("%v", err)
+		}
+	}
 }
 
 func TestValidateURL(t *testing.T) {
-    for _, u := range testURLs {
-        resp, err := ValidateURL(u)
-        if err != nil {
-            t.Errorf("%v", err)
-        }
-        if resp == nil {
-            t.Errorf("nil returned.")
-        }
-    }
+	for _, u := range testURLs {
+		resp, err := ValidateURL(u)
+		if err != nil {
+			t.Errorf("%v", err)
+		}
+		if resp == nil {
+			t.Errorf("nil returned.")
+		}
+	}
 }
