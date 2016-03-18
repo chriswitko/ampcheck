@@ -1,21 +1,33 @@
 package link
 
 import (
-    "testing"
+	"testing"
 )
 
 var testURLs = []string{
 	"https://ymotongpoo.github.io/demos/amp/amp.html",
 }
 
+func TestParse(t *testing.T) {
+	for _, u := range testURLs {
+		links, err := parse(u)
+		if err != nil {
+			t.Fatalf("%v", err)
+		}
+		if !links.Valid {
+			t.Fatalf("canonical: %v, amphtml: %v", links.Canonical, links.AMP)
+		}
+	}
+}
+
 func TestValidate(t *testing.T) {
-    for _, u := range testURLs {
-        links, err := Validate(u)
-        if err != nil {
-            t.Fatalf("%v", err)
-        }
-        if !links.Valid {
-            t.Fatalf("canonical: %v, amphtml: %v", links.Canonical, links.AMP)
-        }
-    }
+	for _, u := range testURLs {
+		links, err := Validate(u)
+		if err != nil {
+			t.Fatalf("%v", err)
+		}
+		if !links.Valid {
+			t.Fatalf("canonical: %v, amphtml: %v", links.Canonical, links.AMP)
+		}
+	}
 }
